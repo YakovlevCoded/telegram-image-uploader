@@ -5,11 +5,20 @@ import axios from 'axios'
 import { useEffect, useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
 
-const token = '5800056038:AAH38c9Z13uPEfLAN2ryPAT1mWkHzFWTuEY'
+// @TODO
+// 0. Get permission
+// 1. Set chat ID (find from https://api.telegram.org/bot`%{token}`/getUpdates)
+// 1. Get all albums
+// 2. Choose albooms to upload
+// 3. Upload photos from albums
+// 4. Current loading photo preview
+
+const token = env.token
 // const chatId = '221971158'
-const chatId = '-1001519000703'
+const chatId = env.chatId
 
 const SEND_PHOTO = false;
+const WAIT = 1000;
 
 const getAssetFileType = (asset) => {
   const uri = asset.uri;
@@ -51,7 +60,7 @@ const sendAssetsToServer = async (assets, albumName, setProcessStatus, totalCoun
 
       isDone += 1;
       setProcessStatus(`Uploading from ${albumName} ${asset.filename} ${fileFormat} ... ` + isDone + '/' + totalCount);
-      await sleep(500);
+      await sleep(WAIT);
     } catch (error) {
       setProcessStatus(`Error: ${error.message}`);
       console.log(error);
@@ -85,6 +94,9 @@ export default function App() {
   const [currentImage, setCurrentImage] = useState(null);
 
   const imageSource = currentImage ? { uri: currentImage.uri } : null;
+  const src = imageSource?.uri?.replace('file://', '');
+
+  console.log(imageSource);
 
   useEffect(() => {
     if (!permissionResponse?.granted) {
@@ -101,7 +113,11 @@ export default function App() {
     <View style={styles.container}>
       <Text>{processStatus}</Text>
       <StatusBar style="auto" />
-      <Image source={imageSource} />
+      {/* <Image style={{
+        width: 50,
+        height: 50,
+        backgroundColor: 'red'
+      }} source={require(src)} /> */}
     </View>
   );
 }
